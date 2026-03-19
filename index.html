@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>بطاقة عيد الفطر المبارك</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(135deg, #0d4a2f, #1a7a4a);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 15px;
+      color: #fff;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    p.sub { color: #c8e6c9; margin-bottom: 25px; font-size: 0.95rem; }
+
+    .controls {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 25px 30px;
+      width: 100%;
+      max-width: 520px;
+      margin-bottom: 25px;
+    }
+    label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #a5d6a7; }
+
+    .card-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .card-selector button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .card-selector button.active {
+      background: rgba(255,215,0,0.25);
+      border-color: gold;
+      color: gold;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 1.1rem;
+      outline: none;
+      margin-bottom: 15px;
+      text-align: center;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    input[type="text"]::placeholder { color: rgba(255,255,255,0.4); }
+    input[type="text"]:focus { border-color: gold; background: rgba(255,255,255,0.18); }
+
+    .row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+    .row > div { flex: 1; min-width: 120px; }
+    select, input[type="color"], input[type="range"] {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 0.9rem;
+    }
+    input[type="color"] { height: 40px; cursor: pointer; padding: 4px; }
+
+    .btn-generate {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #c8a000, #f5d020);
+      color: #1a1a1a;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(200,160,0,0.4);
+    }
+    .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,160,0,0.5); }
+    .btn-generate:active { transform: translateY(0); }
+
+    .preview-wrap {
+      width: 100%;
+      max-width: 400px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    .preview-wrap.visible { display: flex; }
+
+    canvas {
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      max-width: 100%;
+    }
+
+    .btn-download {
+      padding: 12px 35px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #1a7a4a, #2dc26e);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(29,185,84,0.4);
+      transition: transform 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-download:hover { transform: translateY(-2px); }
+
+    .range-row { display: flex; align-items: center; gap: 10px; }
+    .range-row span { min-width: 30px; text-align: center; color: gold; }
+  </style>
+</head>
+<body>
+
+<h1>🌙 بطاقة عيد الفطر المبارك</h1>
+<p class="sub">أدخل اسمك وحمّل بطاقتك الشخصية</p>
+
+<div class="controls">
+
+  <label>اختر تصميم البطاقة:</label>
+  <div class="card-selector">
+    <button class="active" onclick="selectCard(0, this)">البطاقة الفاتحة</button>
+    <button onclick="selectCard(1, this)">البطاقة الخضراء</button>
+  </div>
+
+  <label>اكتب اسمك:</label>
+  <input type="text" id="nameInput" placeholder="مثال: بهيج العمري" oninput="autoPreview()" />
+
+  <div class="row">
+    <div>
+      <label>لون الخط:</label>
+      <input type="color" id="fontColor" value="#1a5c35" oninput="autoPreview()" />
+    </div>
+    <div>
+      <label>نوع الخط:</label>
+      <select id="fontFamily" onchange="autoPreview()">
+        <option value="'Segoe UI', Tahoma, sans-serif">Segoe UI</option>
+        <option value="Georgia, serif">Georgia</option>
+        <option value="Arial, sans-serif">Arial</option>
+        <option value="'Times New Roman', serif">Times New Roman</option>
+        <option value="Verdana, sans-serif">Verdana</option>
+      </select>
+    </div>
+  </div>
+
+  <label>حجم الخط:</label>
+  <div class="range-row">
+    <input type="range" id="fontSize" min="20" max="90" value="42" oninput="updateSize(this); autoPreview();" />
+    <span id="sizeLabel">42</span>
+  </div>
+
+  <br/>
+  <button class="btn-generate" onclick="generateCard()">✨ توليد البطاقة</button>
+</div>
+
+<div class="preview-wrap" id="previewWrap">
+  <canvas id="cardCanvas"></canvas>
+  <button class="btn-download" onclick="downloadCard()">
+    ⬇️ تحميل البطاقة
+  </button>
+</div>
+
+<script>
+  // ===== CONFIG =====
+  // الإحداثيات التقريبية للمستطيل في كل صورة [x, y, width, height]
+  const CARDS = [
+    {
+      src: '21E.jpg',
+      rect: { x: 0.05, y: 0.875, w: 0.90, h: 0.065 } // نسبة من أبعاد الصورة
+    },
+    {
+      src: '12E.jpg',
+      rect: { x: 0.05, y: 0.875, w: 0.90, h: 0.065 }
+    }
+  ];
+
+  let selectedCard = 0;
+  let loadedImages = [null, null];
+  let previewTimeout = null;
+
+  // تحميل الصور مسبقاً
+  CARDS.forEach((card, i) => {
+    const img = new Image();
+    img.src = card.src;
+    img.onload = () => { loadedImages[i] = img; };
+    img.onerror = () => console.warn(`تعذّر تحميل الصورة: ${card.src}`);
+  });
+
+  function selectCard(index, btn) {
+    selectedCard = index;
+    document.querySelectorAll('.card-selector button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    autoPreview();
+  }
+
+  function updateSize(el) {
+    document.getElementById('sizeLabel').textContent = el.value;
+  }
+
+  function autoPreview() {
+    clearTimeout(previewTimeout);
+    previewTimeout = setTimeout(() => {
+      if (document.getElementById('nameInput').value.trim()) generateCard(true);
+    }, 300);
+  }
+
+  function generateCard(silent = false) {
+    const name = document.getElementById('nameInput').value.trim();
+    if (!name) { if (!silent) alert('الرجاء إدخال الاسم أولاً!'); return; }
+
+    const img = loadedImages[selectedCard];
+    if (!img) {
+      if (!silent) alert('الصورة لم تُحمَّل بعد، انتظر لحظة...');
+      return;
+    }
+
+    const canvas = document.getElementById('cardCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+
+    // رسم الصورة الأصلية
+    ctx.drawImage(img, 0, 0);
+
+    // حساب موضع المستطيل
+    const r = CARDS[selectedCard].rect;
+    const rx = r.x * canvas.width;
+    const ry = r.y * canvas.height;
+    const rw = r.w * canvas.width;
+    const rh = r.h * canvas.height;
+
+    // كتابة الاسم داخل المستطيل
+    const fontSize = parseInt(document.getElementById('fontSize').value);
+    const fontColor = document.getElementById('fontColor').value;
+    const fontFamily = document.getElementById('fontFamily').value;
+
+    ctx.font = `bold ${fontSize}px ${fontFamily}`;
+    ctx.fillStyle = fontColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // قص النص إذا كان طويلاً
+    let displayName = name;
+    while (ctx.measureText(displayName).width > rw - 20 && displayName.length > 1) {
+      displayName = displayName.slice(0, -1);
+    }
+
+    ctx.fillText(displayName, rx + rw / 2, ry + rh / 2);
+
+    document.getElementById('previewWrap').classList.add('visible');
+    canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function downloadCard() {
+    const canvas = document.getElementById('cardCanvas');
+    const name = document.getElementById('nameInput').value.trim() || 'بطاقة-العيد';
+    const link = document.createElement('a');
+    link.download = `عيد-الفطر-${name}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+</script>
+
+</body>
+</html>
